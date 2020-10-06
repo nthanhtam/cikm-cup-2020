@@ -30,134 +30,36 @@ model.fit(
 )
 
 
-# In[356]:
 
-
-pred = model.predict(X_val)
-
-
-# In[357]:
-
-
-# 0.37598497245128515
-np.sqrt(mean_squared_error(np.log1p(y_val), pred))
-
-
-# In[358]:
-
-
-pred = np.expm1(pred)
-
-
-# In[359]:
-
-
-pred = np.where(pred < 1, 0, pred)
-
-
-# In[360]:
-
-
-# 0.14611327569225063
-# 0.14021457925980343
-mean_squared_log_error(y_val, pred)
-
-
-# In[227]:
-
-
-# X_tst = train.loc[train['split']==TST_SET][['tweet_id']+sel_features]
-# X_tst = train.loc[train['split']==TST_SET][sel_features]
-
-
-# In[362]:
-
-
-# X_tst = hstack((X_tst, embed_feat_tst), format='csr')
 X_tst = hstack((X_tst, cnt_feat_tst), format="csr")
 
 
-# In[229]:
-
-
-# X_tst = train.loc[train['split']==TST_SET][sel_features]
-
-
-# In[363]:
-
-
 tst_pred = model.predict(X_tst)
-
-
-# In[364]:
-
 
 tst_pred = np.expm1(tst_pred)
 tst_pred = np.where(tst_pred < 1, 0, tst_pred)
 
 
-# In[365]:
-
-
 np.savetxt("../sub/validation.predict", np.round(tst_pred), fmt="%i")
-
-
-# In[366]:
 
 
 with open("../public_dat/feat_v2.pkl", "wb") as f:
     pickle.dump([X, y, X_tst], f, protocol=4)
 
 
-# In[182]:
-
-
-import gc
-
-del embed_feat
-gc.collect()
-
-
-# In[180]:
-
-
-lgb.plot_importance(model, importance_type="split", max_num_features=30)
-
-
-# In[181]:
-
-
-lgb.plot_importance(model, importance_type="gain", max_num_features=30)
-
-
-# In[274]:
-
-
 with open("../public_dat/feat.pkl", "rb") as f:
     X, y, X_tst = pickle.load(f)
-
-
-# In[369]:
 
 
 model.set_params(**{"n_estimtors": 4000})
 
 
-# In[370]:
-
 
 model.fit(X, np.log1p(y), verbose=200)
-
-
-# In[371]:
-
 
 tst_pred = model.predict(X_tst)
 tst_pred = np.expm1(tst_pred)
 tst_pred = np.where(tst_pred < 1, 0, tst_pred)
-
-
-# In[372]:
 
 
 np.savetxt("../sub/validation.predict", np.round(tst_pred), fmt="%i")
